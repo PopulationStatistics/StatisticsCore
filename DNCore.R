@@ -113,3 +113,9 @@ DataFrameColumnExists <- function(data, colName) {
 }
 
 
+#-------------------------------------------------------------------------------------------------------
+# Takes the variable name to test for as a string
+VariableExists <- function(varName) {
+  returnValue <- exists(varName)
+}
+

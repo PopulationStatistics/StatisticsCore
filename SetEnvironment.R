@@ -65,6 +65,7 @@ using("readxl", "dplyr", "tidyr", "stringr", # These are the core libraries we u
       "scales", # for formatting numbers
       "png", # for exporting charts as PNG
       "gridExtra", # for reading and writing CSV using utf-8
+      "curl", # for downloading JSON
       "jsonlite", # for explorting / importing JSON
 #      "rjson",
       "stringi", # For reading and manipulating strings - see http://www.gagolewski.com/software/stringi/
