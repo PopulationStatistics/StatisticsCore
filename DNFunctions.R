@@ -64,9 +64,22 @@ GetPercentLabel <-
   }  
 
 
+
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 #----- Calculates a column with a percentage and another with the PercentLabel...
 CalculatePercentageWithLabel <- 
+  function(df, level1Col1, level1Col2, level2Col, countCol, labelThreshold) {
+
+    if (IsNN(level1Col2) | level1Col2 == "") {
+      returnValue <- CalculatePercentageWithLabel2(df, level1Col1, level2Col, countCol, labelThreshold)      
+    } else {
+      returnValue <- CalculatePercentageWithLabel1(df, level1Col1, level1Col2, level2Col, countCol, labelThreshold)
+    }
+  }
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+#----- Calculates a column with a percentage and another with the PercentLabel...
+CalculatePercentageWithLabel1 <- 
   function(df, level1Col1, level1Col2, level2Col, countCol, labelThreshold) {
 
     # Include a suitable default for the label threshold (i.e. the % at which to start showing labels)
@@ -104,6 +117,43 @@ CalculatePercentageWithLabel <-
     returnValue <- df
 }
 
+#-------------------------------------------------------------------------------------------------------------------------------------------------------
+CalculatePercentageWithLabel2 <- 
+  function(df, level1Col1, level2Col, countCol, labelThreshold) {
+    
+    # Include a suitable default for the label threshold (i.e. the % at which to start showing labels)
+    if ( labelThreshold == 0) {
+      labelThreshold <- 10.0
+    }
+    
+    # Reset both the percent and the label
+    df$PercentLabel <- ""
+    df$Percent <- 0
+    
+    # So in order to use the column names provided by string values, we need to convert them to names and then use the !! to unquote them
+    # https://stackoverflow.com/questions/47081564/replacing-group-by-with-group-by-when-the-argument-is-a-string-in-dplyr
+    level1Col1 <- as.name(level1Col1)
+    level2Col <- as.name(level2Col)
+    countCol <- as.name(countCol)
+    
+    # Then lets calculate the percentages ...
+    # This creates the percent and the percent label columns - it looks a little intense, 
+    df <- df %>% 
+      group_by(!!level1Col1) %>% 
+      # okay, we've got the total, now we can do some math with mutate
+      # And round the data too to the nearest integer
+      mutate( GroupTotal=sum(!!countCol, na.rm=T)) %>%    
+      ungroup() %>%    
+      group_by(!!level1Col1, !!level2Col) %>% 
+      # okay, now lets also create a label for all columns
+      mutate(
+        Percent=GetPercent(!!countCol, GroupTotal, 0), 
+        PercentLabel=GetPercentLabel(Percent, labelThreshold)) %>% 
+      ungroup()
+    
+    
+    returnValue <- df
+  }
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 # Summarise the data by year and month given specific citizen and geo values
@@ -359,9 +409,16 @@ GenerateChartWithStackedBarChartAndFacets <-
 #-------------------------------------------------------------------------------------------------------------------------------------------------------
 # fillValues is a vector
 GenerateChartWithStackedBarChart <-
-  function(df, xColName, yColName, yColLabel, fillColName, fillValues, titleText, captionText) {
+  function(df, xColName, yColName, yColLabel, fillColName, fillValues, titleText, captionText, xOrderIsAscending=FALSE) {
     
     pos <- position_fill(vjust=0.47)
+    
+    # Specify the order of the limits
+    xLimits <- rev(levels(df[[xColName]]))
+    if (xOrderIsAscending) {
+      xLimits <- levels(df[[xColName]])
+    }
+    
     
     plot <- ggplot(df,
                    # The x axis is the names of the countries ordered by the overall count                
@@ -380,9 +437,10 @@ GenerateChartWithStackedBarChart <-
       geom_bar(position=pos, stat="identity") +
       geom_text(position=pos, size = 3, colour="#ffffff") + 
       
-      scale_x_discrete(limits = rev(levels(df[[xColName]]))) +
+      #scale_x_discrete(limits = rev(levels(df[[xColName]]))) +
+      scale_x_discrete(limits = xLimits) +
       # Then set our colours and legend labels using the parameters of scale_fill_manual
-      # note that we strim as needed to avoid the total count
+      # note that we need to pre-strim to avoid the total count
       scale_fill_manual(values=fillValues) +
       # flip the coordinates
       coord_flip() +

@@ -86,6 +86,17 @@ IsNull <- function(field = NULL) {
 }
 
 #-------------------------------------------------------------------------------------------------------
+# Checks if a value is NULL, NA
+IsNN <- function(field = NULL) {
+  
+  hasNoVal <- is.null(field)
+  if(hasNoVal == FALSE) {
+    hasNoVal <- is.na(field)
+  }
+  
+  returnValue <- hasNoVal
+}
+#-------------------------------------------------------------------------------------------------------
 # Checks if a value is NULL, NA or NaN
 IsNNN <- function(field = NULL) {
   
