@@ -43,12 +43,34 @@ rootDataDirectory <- rootDirectory
 
 
 #-------------------------------------------------------------------------------------------------------------------------
+# Declare all the relevant data folders and file names
+genericDataDirectoryName <- paste0(rootDataDirectory, "Data/")
+
+# The master data directory - within this there will be files containing the historic data on refugees, asylum seekers and IDPs
+masterDataDirectoryName <- paste0(rootDataDirectory, "Data/Master_Data/")
+
+# The current ASR data - this will be updated depending on whether or not this is a MYSR or ASR event
+workingDirectoryName <- paste0(rootDataDirectory, "Data_ASR/")
+
+# Demographic data
+demographicDataDirectoryName <- paste0(rootDataDirectory, "Data/Demographics/")
+
+
+# Footnotes folder
+footnotesFolder <- paste0(rootDataDirectory, "PopStats/Footnotes/")
+
+
+
+#-------------------------------------------------------------------------------------------------------------------------
+# The key population types to keep!!
+popTypes <- c("REF", "ROC", "ASY", "IDP", "IOC", "STA", "OOC", "VDA", "HST", "RET", "RDP")
+#popTypes <- c("REF", "ROC", "ASY", "IDP", "IOC", "STA", "OOC", "VDA", "HST", "RET", "RDP", "NAT" "RST")
+
+
+#-------------------------------------------------------------------------------------------------------------------------
 # Periodically update the packages installed
 # update.packages()
 
-# 
-# 
-# 
 
 
 #-------------------------------------------------------------------------------------------------------------------------
@@ -78,15 +100,22 @@ using("readxl", "dplyr", "tidyr", "stringr", # These are the core libraries we u
 fontsForCharts <- c( "Open Sans" )
 
 
+#-------------------------------------------------------------------------------------------------------------------------
 # Load the scripts with the worker functions
-source(paste0(rootScriptDirectory,"StatisticsLoader/PopStatsDataRedactionHelper.R"))
 
+#-----a----- Statistics loader worker functions
+source(paste0(rootScriptDirectory,"StatisticsLoader/PopStatsDataRedactionHelper.R"))
+source(paste0(rootScriptDirectory,"StatisticsLoader/GlobalTrendsDataMasher.R"))
+source(paste0(rootScriptDirectory,"StatisticsLoader/PopStatsDataRedaction.R"))
+source(paste0(rootScriptDirectory,"StatisticsLoader/DemographicsWithLocation.R"))
+
+#-----b----- Quality assurance worker functions
 source(paste0(rootScriptDirectory,"StatisticalQualityAssurance/StatisticalQualityAssuranceFrameworkHelper.R"))
 
-# And the country special cases
+#-----c----- And the country special cases
 source(paste0(rootScriptDirectory,"StatisticsLoader/CountrySpecialCases.R"))
 
-# DNFunctions - for charting
+#-----d----- DNFunctions - for charting
 fileNameDNFunctions <- paste0(rootScriptDirectory,"StatisticsLoader/CountrySpecialCases.R")
 if( file.exists(fileNameDNFunctions)) {
    print("Also loading DN functions (for charting)")
