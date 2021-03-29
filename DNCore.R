@@ -130,3 +130,30 @@ VariableExists <- function(varName) {
   returnValue <- exists(varName)
 }
 
+
+
+#-------------------------------------------------------------------------------------------------------
+# Identifies any differences in the number of columns and returns three sets of column names (in first DF, intersects, in second DF)
+CompareDataFrameColumns <- function(df1, df2) {
+  
+  n1 <- names(df1)
+  n2 <- names(df2)
+  
+  returnValue <- CompareLists(n1, n2)
+  
+}
+
+
+#-------------------------------------------------------------------------------------------------------
+# Identifies any differences in the number of columns and returns three sets of column names (in first DF, intersects, in second DF)
+CompareLists <- function(n1, n2) {
+
+  set1 <- setdiff(n1, n2)
+  set2 <- intersect(n1, n2)
+  set3 <- setdiff(n2, n1)
+  
+  returnValue <- list(set1=set1, set2=set2, set3=set3)
+  
+}
+
+

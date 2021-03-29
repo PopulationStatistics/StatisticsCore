@@ -116,7 +116,7 @@ source(paste0(rootScriptDirectory,"StatisticalQualityAssurance/StatisticalQualit
 source(paste0(rootScriptDirectory,"StatisticsLoader/CountrySpecialCases.R"))
 
 #-----d----- DNFunctions - for charting
-fileNameDNFunctions <- paste0(rootScriptDirectory,"StatisticsLoader/CountrySpecialCases.R")
+fileNameDNFunctions <- paste0(rootScriptDirectory,"StatisticsCore/DNFunctions.R")
 if( file.exists(fileNameDNFunctions)) {
    print("Also loading DN functions (for charting)")
    source(fileNameDNFunctions)
