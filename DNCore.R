@@ -120,7 +120,9 @@ PrettyNum <- function(num) {
 
 #-------------------------------------------------------------------------------------------------------
 DataFrameColumnExists <- function(data, colName) {
-  returnValue <- length(grep(colName, names(data), value=TRUE)) > 0
+  
+  returnValue <- colName %in% colnames(data)
+  #returnValue <- length(grep(colName, names(data), value=TRUE)) > 0
 }
 
 
